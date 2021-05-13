@@ -1,0 +1,14 @@
+package dusan.rajkovic.exception;
+
+public class ExistEntityException extends MyApplicationException {
+
+	private static final long serialVersionUID = -5996357098821640970L;
+	
+	private final Object entity;
+	
+	public ExistEntityException(Object entity, String message) {
+		super(message);
+		this.entity = entity;
+	}
+
+}

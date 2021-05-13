@@ -1,0 +1,5 @@
+package dusan.rajkovic.exception;
+
+public class ExistEntityException {
+
+}

@@ -1,0 +1,152 @@
+package dusan.rajkovic.mapper;
+
+import dusan.rajkovic.dto.ExamDto;
+import dusan.rajkovic.dto.ExamPeriodDto;
+import dusan.rajkovic.dto.ProfessorDto;
+import dusan.rajkovic.dto.SubjectDto;
+import dusan.rajkovic.entity.ExamEntity;
+import dusan.rajkovic.entity.ExamPeriodEntity;
+import dusan.rajkovic.entity.ProfessorEntity;
+import dusan.rajkovic.entity.SubjectEntity;
+import javax.annotation.Generated;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.24.0.v20201123-0742, environment: Java 15.0.1 (Oracle Corporation)"
+)
+public class ExamMapperImpl implements ExamMapper {
+
+    @Override
+    public ExamDto toExamDto(ExamEntity exam) {
+        if ( exam == null ) {
+            return null;
+        }
+
+        ExamDto examDto = new ExamDto();
+
+        examDto.setSubjectDto( subjectEntityToSubjectDto( exam.getSubject() ) );
+        examDto.setProfessorDto( professorEntityToProfessorDto( exam.getProfessor() ) );
+        examDto.setExamPeriodDto( examPeriodEntityToExamPeriodDto( exam.getExamPeriod() ) );
+        examDto.setId( exam.getId() );
+        examDto.setExamDate( exam.getExamDate() );
+
+        return examDto;
+    }
+
+    @Override
+    public ExamEntity toExam(ExamDto examDto) {
+        if ( examDto == null ) {
+            return null;
+        }
+
+        ExamEntity examEntity = new ExamEntity();
+
+        examEntity.setSubject( subjectDtoToSubjectEntity( examDto.getSubjectDto() ) );
+        examEntity.setProfessor( professorDtoToProfessorEntity( examDto.getProfessorDto() ) );
+        examEntity.setExamPeriod( examPeriodDtoToExamPeriodEntity( examDto.getExamPeriodDto() ) );
+        examEntity.setId( examDto.getId() );
+        examEntity.setExamDate( examDto.getExamDate() );
+
+        return examEntity;
+    }
+
+    protected SubjectDto subjectEntityToSubjectDto(SubjectEntity subjectEntity) {
+        if ( subjectEntity == null ) {
+            return null;
+        }
+
+        SubjectDto subjectDto = new SubjectDto();
+
+        subjectDto.setId( subjectEntity.getId() );
+        subjectDto.setName( subjectEntity.getName() );
+        subjectDto.setDescription( subjectEntity.getDescription() );
+        subjectDto.setNoOfESP( subjectEntity.getNoOfESP() );
+        subjectDto.setYearOfStudy( subjectEntity.getYearOfStudy() );
+        subjectDto.setSemester( subjectEntity.getSemester() );
+
+        return subjectDto;
+    }
+
+    protected ProfessorDto professorEntityToProfessorDto(ProfessorEntity professorEntity) {
+        if ( professorEntity == null ) {
+            return null;
+        }
+
+        ProfessorDto professorDto = new ProfessorDto();
+
+        professorDto.setId( professorEntity.getId() );
+        professorDto.setFirstName( professorEntity.getFirstName() );
+        professorDto.setLastName( professorEntity.getLastName() );
+        professorDto.setEmail( professorEntity.getEmail() );
+        professorDto.setAdress( professorEntity.getAdress() );
+        professorDto.setPhone( professorEntity.getPhone() );
+        professorDto.setReelectionDate( professorEntity.getReelectionDate() );
+
+        return professorDto;
+    }
+
+    protected ExamPeriodDto examPeriodEntityToExamPeriodDto(ExamPeriodEntity examPeriodEntity) {
+        if ( examPeriodEntity == null ) {
+            return null;
+        }
+
+        ExamPeriodDto examPeriodDto = new ExamPeriodDto();
+
+        examPeriodDto.setId( examPeriodEntity.getId() );
+        examPeriodDto.setName( examPeriodEntity.getName() );
+        examPeriodDto.setExamPeriodFrom( examPeriodEntity.getExamPeriodFrom() );
+        examPeriodDto.setExamPeriodTo( examPeriodEntity.getExamPeriodTo() );
+
+        return examPeriodDto;
+    }
+
+    protected SubjectEntity subjectDtoToSubjectEntity(SubjectDto subjectDto) {
+        if ( subjectDto == null ) {
+            return null;
+        }
+
+        SubjectEntity subjectEntity = new SubjectEntity();
+
+        subjectEntity.setId( subjectDto.getId() );
+        subjectEntity.setName( subjectDto.getName() );
+        subjectEntity.setDescription( subjectDto.getDescription() );
+        subjectEntity.setNoOfESP( subjectDto.getNoOfESP() );
+        subjectEntity.setYearOfStudy( subjectDto.getYearOfStudy() );
+        subjectEntity.setSemester( subjectDto.getSemester() );
+
+        return subjectEntity;
+    }
+
+    protected ProfessorEntity professorDtoToProfessorEntity(ProfessorDto professorDto) {
+        if ( professorDto == null ) {
+            return null;
+        }
+
+        ProfessorEntity professorEntity = new ProfessorEntity();
+
+        professorEntity.setId( professorDto.getId() );
+        professorEntity.setFirstName( professorDto.getFirstName() );
+        professorEntity.setLastName( professorDto.getLastName() );
+        professorEntity.setEmail( professorDto.getEmail() );
+        professorEntity.setAdress( professorDto.getAdress() );
+        professorEntity.setPhone( professorDto.getPhone() );
+        professorEntity.setReelectionDate( professorDto.getReelectionDate() );
+
+        return professorEntity;
+    }
+
+    protected ExamPeriodEntity examPeriodDtoToExamPeriodEntity(ExamPeriodDto examPeriodDto) {
+        if ( examPeriodDto == null ) {
+            return null;
+        }
+
+        ExamPeriodEntity examPeriodEntity = new ExamPeriodEntity();
+
+        examPeriodEntity.setId( examPeriodDto.getId() );
+        examPeriodEntity.setName( examPeriodDto.getName() );
+        examPeriodEntity.setExamPeriodFrom( examPeriodDto.getExamPeriodFrom() );
+        examPeriodEntity.setExamPeriodTo( examPeriodDto.getExamPeriodTo() );
+
+        return examPeriodEntity;
+    }
+}

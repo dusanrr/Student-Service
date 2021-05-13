@@ -1,0 +1,90 @@
+package dusan.rajkovic.mapper;
+
+import javax.annotation.Generated;
+
+import student.service.dto.ProfessorDto;
+import student.service.dto.SubjectDto;
+import student.service.entity.ProfessorEntity;
+import student.service.entity.SubjectEntity;
+import student.service.mapper.SubjectMapper;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    comments = "version: 1.4.2.Final, compiler: Eclipse JDT (IDE) 3.24.0.v20201123-0742, environment: Java 15.0.1 (Oracle Corporation)"
+)
+public class SubjectMapperImpl implements SubjectMapper {
+
+    @Override
+    public SubjectDto toSubjectDto(SubjectEntity subject) {
+        if ( subject == null ) {
+            return null;
+        }
+
+        SubjectDto subjectDto = new SubjectDto();
+
+        subjectDto.setProfessorDto( professorEntityToProfessorDto( subject.getProfessor() ) );
+        subjectDto.setId( subject.getId() );
+        subjectDto.setName( subject.getName() );
+        subjectDto.setDescription( subject.getDescription() );
+        subjectDto.setNoOfESP( subject.getNoOfESP() );
+        subjectDto.setYearOfStudy( subject.getYearOfStudy() );
+        subjectDto.setSemester( subject.getSemester() );
+
+        return subjectDto;
+    }
+
+    @Override
+    public SubjectEntity toSubject(SubjectDto subjectDto) {
+        if ( subjectDto == null ) {
+            return null;
+        }
+
+        SubjectEntity subjectEntity = new SubjectEntity();
+
+        subjectEntity.setProfessor( professorDtoToProfessorEntity( subjectDto.getProfessorDto() ) );
+        subjectEntity.setId( subjectDto.getId() );
+        subjectEntity.setName( subjectDto.getName() );
+        subjectEntity.setDescription( subjectDto.getDescription() );
+        subjectEntity.setNoOfESP( subjectDto.getNoOfESP() );
+        subjectEntity.setYearOfStudy( subjectDto.getYearOfStudy() );
+        subjectEntity.setSemester( subjectDto.getSemester() );
+
+        return subjectEntity;
+    }
+
+    protected ProfessorDto professorEntityToProfessorDto(ProfessorEntity professorEntity) {
+        if ( professorEntity == null ) {
+            return null;
+        }
+
+        ProfessorDto professorDto = new ProfessorDto();
+
+        professorDto.setId( professorEntity.getId() );
+        professorDto.setFirstName( professorEntity.getFirstName() );
+        professorDto.setLastName( professorEntity.getLastName() );
+        professorDto.setEmail( professorEntity.getEmail() );
+        professorDto.setAdress( professorEntity.getAdress() );
+        professorDto.setPhone( professorEntity.getPhone() );
+        professorDto.setReelectionDate( professorEntity.getReelectionDate() );
+
+        return professorDto;
+    }
+
+    protected ProfessorEntity professorDtoToProfessorEntity(ProfessorDto professorDto) {
+        if ( professorDto == null ) {
+            return null;
+        }
+
+        ProfessorEntity professorEntity = new ProfessorEntity();
+
+        professorEntity.setId( professorDto.getId() );
+        professorEntity.setFirstName( professorDto.getFirstName() );
+        professorEntity.setLastName( professorDto.getLastName() );
+        professorEntity.setEmail( professorDto.getEmail() );
+        professorEntity.setAdress( professorDto.getAdress() );
+        professorEntity.setPhone( professorDto.getPhone() );
+        professorEntity.setReelectionDate( professorDto.getReelectionDate() );
+
+        return professorEntity;
+    }
+}

@@ -1,0 +1,13 @@
+package dusan.rajkovic.exception;
+
+public class MyApplicationException extends Exception 
+{
+
+	private static final long serialVersionUID = -2590946703440543536L;
+
+	public MyApplicationException(String message) 
+	{
+		super(message);
+	}
+
+}
