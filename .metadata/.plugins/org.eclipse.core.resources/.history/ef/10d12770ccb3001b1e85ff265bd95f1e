@@ -1,9 +1,0 @@
-spring.datasource.url = jdbc:mysql://localhost:3306/student_service?createDatabaseIfNotExist=TRUE&autoReconnect=true
-spring.datasource.username = dr
-spring.datasource.password = admin
-
-spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
-spring.jpa.hibernate.ddl-auto=update
-spring.datasource.initialization-mode=always
-server.port=0
-
