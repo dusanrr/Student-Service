@@ -1,5 +1,4 @@
 # Student Service
- 
 Technologies used: 
 1. MySQL
 2. Spring Boot
