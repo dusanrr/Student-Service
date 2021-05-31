@@ -1,6 +1,6 @@
 # Student Service
  
-## Technologies used: 
+Technologies used: 
 1. MySQL
 2. Spring Boot
 3. REST API
