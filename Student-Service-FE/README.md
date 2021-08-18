@@ -1,4 +1,4 @@
-# dusan-rajkovic-fe
+# student-service-fe
 
 ## Project setup
 ```
