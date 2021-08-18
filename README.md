@@ -6,4 +6,5 @@
 3. REST API
 4. Maven
 5. Object relational mapping (ORM) – Java Persistence API (JPA) and Hibernate
-6. Vue.js
+6. Spring Security with JWT
+7. Vue.js
