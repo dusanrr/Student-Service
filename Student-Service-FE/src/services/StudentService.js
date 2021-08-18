@@ -7,8 +7,8 @@ export default {
   getAllCities: () => {
     return apiClient.get('/api/cities')
   },
-  getStudentsByPage: ({ page, size}) => {
-      return apiClient.get(`/api/students/page?page=${page}&size=${size}`)
+  getAllByPage: ({ page, size, search }) => {
+      return apiClient.get(`/api/students/page?page=${page}&size=${size}&search=${search}`)
   },
   getStudent: (studentId) => {
       return apiClient.get('/api/students/'+ studentId)

@@ -3,24 +3,27 @@ package student.service.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import student.service.dto.ExamDto;
-import student.service.exception.EntityNotPresent;
-import student.service.exception.ExistEntityException;
+import student.service.entity.ExamEntity;
 
 public interface ExamService {
 	
-	List<ExamDto> findAll();
+	List<ExamEntity> findAll();
 
-	void deleteById(Long id);
+	void deleteById(Long id) throws EntityNotFoundException;
 
-	ExamDto save(ExamDto examDto) throws ExistEntityException;
+	ExamEntity save(ExamEntity examEntity) throws EntityExistsException;
 	
-	ExamDto update(ExamDto examDto) throws EntityNotPresent ;
+	ExamEntity update(ExamEntity examEntity) throws EntityNotFoundException ;
 	
-	Optional<ExamDto> findById(Long id);
+	Optional<ExamEntity> findById(Long id);
 
-	Page<ExamDto> findByPage(Pageable pageable);
+	Page<ExamEntity> findByPage(Pageable pageable, String search);
+	
+	Optional<List<?>> findAllPosibleStudentExams(String indexNumber);
 }

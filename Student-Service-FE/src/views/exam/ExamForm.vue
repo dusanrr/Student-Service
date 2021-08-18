@@ -1,77 +1,59 @@
 <template>
-  <div class="form-container m-4 col-6 col-md-8 col-sm-10">
-    <h3 v-if="actionType === 'new'">New Exam</h3>
-    <h3 v-else>Edit Exam</h3>
+  <div class="container">
+    <img alt="Student service" src="../../assets/student-crud.png">
+    <div class="row justify-content-center">
+      <div class="col-4" style="margin-top: 50px;">
+        <h3 v-if="actionType === 'new'">New Exam</h3>
+        <h3 v-else>Edit Exam</h3>
 
-    <MyInputComponent
-      readonly
-      name="id"
-      label="Exam Id"
-      v-model="id"
-      :vcomp="v$.id"
-      v-if="actionType !== 'new'"
-    >
-    </MyInputComponent>
-    
-    <label class="form-label">Subject</label>
-    <div>
-      <select class="form-control" v-model="subjectDto">
-        <option
-          v-for="subject in subjectList"
-          :value="subject"
-          :key="subject.id"
-        >
-          {{ subject.name }}
-        </option>
-      </select>
-    </div>
+        <MyInputComponent name="id" label="Exam Id" v-model="exam.id" :vcomp="v$.exam.id" v-if="actionType !== 'new'" readonly></MyInputComponent>
+        
+        <div class="label-left">
+          <label class="form-label required-field">Subject</label>
+          <select class="form-control" v-model="exam.subject">
+            <option v-for="subject in subjectList" :value="subject" :key="subject.id">
+              {{ subject.name }}
+            </option>
+          </select>
+        </div>
 
-    <label class="form-label">Professor</label>
-    <div>
-      <select class="form-control" v-model="professorDto">
-        <option
-          v-for="professor in professorList"
-          :value="professor"
-          :key="professor.id"
-        >
-          {{ professor.firstName }} {{ professor.lastName }}
-        </option>
-      </select>
-    </div>
+        <div class="label-left">
+          <label class="form-label required-field">Professor</label>
+          <select class="form-control" v-model="exam.professor">
+            <option v-for="professor in professorList" :value="professor" :key="professor.id">
+              {{ professor.firstName }} {{ professor.lastName }}
+            </option>
+          </select>
+        </div>
 
-    <label class="form-label">Exam date</label>
-    <input type="date" v-model="examDate" class="form-control"/>
+        <div class="label-left">
+          <label class="form-label required-field">Exam date</label>
+          <input type="date" v-model="exam.examDate" class="form-control"/>
+        </div>
 
-    <label class="form-label">Exam period</label>
-    <div>
-      <select class="form-control" v-model="examPeriodDto">
-        <option
-          v-for="examPeriod in examPeriodList"
-          :value="examPeriod"
-          :key="examPeriod.id"
-        >
-          {{ examPeriod.name }}
-        </option>
-      </select>
-    </div>
+        <div class="label-left">
+          <label class="form-label required-field">Exam period</label>
+          <select class="form-control" v-model="exam.examPeriod">
+            <option v-for="examPeriod in examPeriodList" :value="examPeriod" :key="examPeriod.id">
+              {{ examPeriod.name }}
+            </option>
+          </select>
+        </div>
 
-    <div class="d-flex flex-row-reverse">
-      <button class="btn btn-outline-primary" @click="saveExam">Save</button>
+        <button class="btn btn-outline-primary" @click="saveExam" :disabled='!isComplete'>Save</button>
+        <button class="btn btn-outline-danger cancel" @click="returnBack">Cancel</button>
+
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import useValidate from "@vuelidate/core";
-import {
-  required,
-  //maxValue,
-  //minLength,
-  //maxLength,
-} from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import MyInputComponent from "@/components/input/MyInputControl.vue";
 import ExamService from "@/services/ExamService.js";
-import { addMessage } from "@/main.js";
 
 export default {
   components: { MyInputComponent },
@@ -85,20 +67,10 @@ export default {
     },
   },
   created() {
+    this.vueLoader();
     if (this.examId) {
       ExamService.getExam(this.examId).then((response) => {
-        const exam = response.data;
-        this.id = exam.id;
-        this.subjectDto.id = exam.subjectDto.id;
-        this.subjectDto.name = exam.subjectDto.name;
-        this.professorDto.id = exam.professorDto.id;
-        this.professorDto.firstName = exam.professorDto.firstName;
-        this.professorDto.lastName = exam.professorDto.lastName;
-        this.examDate = exam.examDate;
-        this.examPeriodDto.id = exam.examPeriodDto.id;
-        this.examPeriodDto.name = exam.examPeriodDto.name;
-        this.examPeriodDto.examPeriodFrom = exam.examPeriodDto.examPeriodFrom;
-        this.examPeriodDto.examPeriodTo = exam.examPeriodDto.examPeriodTo;
+        this.exam = response.data;
       });
     }
     this.getAllProfessors();
@@ -111,45 +83,50 @@ export default {
       professorList: [],
       subjectList: [],
       examPeriodList: [],
-      id: null,
-      subjectDto: {
-        id: null,
-        name: ""
-      },
-      professorDto: {
-        id: null,
-        firstName: "",
-        lastName: ""
-      },
-      examDate: null,
-      examPeriodDto: {
-        id: null,
-        name: "",
-        examPeriodFrom: null,
-        examPeriodTo: null
-      },
+      exam:{}
     };
   },
   validations() {
     return {
-      id: {
-        required
-      },
-      subjectDto: {
-        required
-      },
-      professorDto: {
-        required
-      },
-      examDate: {
-        required
-      },
-      examPeriodDto: {
-        required
+      exam: {
+        id: { required },
+        subject: { required },
+        professor: { required },
+        examDate: { required },
+        examPeriod: { required }
       }
     };
   },
+  computed: {
+    isComplete () {
+      if(this.actionType == 'new')
+        return this.exam.subject && this.exam.professor && this.exam.examDate && this.exam.examPeriod;
+        else
+          return this.exam.id && this.exam.subject && this.exam.professor && this.exam.examDate && this.exam.examPeriod;
+    }
+  },
   methods: {
+    returnBack() {
+      this.$router.go(-1);
+    },
+    vueLoader()
+      {
+        let loader = this.$loading.show({
+        // Optional parameters
+        container: this.$refs.loadingContainer,
+        color: '#0C937A',
+        loader: 'dots',
+        width: 64,
+        height: 64,
+        backgroundColor: '#EFEBEB',
+        opacity: 1.0,
+        zIndex: 999,
+        });
+        // simulate AJAX
+        setTimeout(() => {
+            loader.hide()
+        }, 3000)
+    },
     saveExam() {
       if (this.actionType && this.actionType === "new") {
         this.insertExam();
@@ -158,78 +135,33 @@ export default {
       }
     },
     insertExam() {
-      ExamService.insertExam({
-        subjectDto: {
-          id: this.subjectDto.id,
-          firstName: this.subjectDto.firstName,
-          lastName: this.subjectDto.lastName,
-        },
-        professorDto: {
-          id: this.professorDto.id,
-          firstName: this.professorDto.name
-        },
-        examDate: this.examDate,
-        examPeriodDto: {
-          id: this.examPeriodDto.id,
-          name: this.examPeriodDto.name,
-          examPeriodFrom: this.examPeriodDto.examPeriodFrom,
-          examPeriodTo: this.examPeriodDto.examPeriodTo
-        }
-      })
+      ExamService.insertExam(this.exam)
         .then((response) => {
-          console.log("Exam inserted" + response);
-          addMessage({
-            message: "Exam inserted",
-            type: "success",
-            title: "EXAM",
-          });
+          console.log("Exam inserted" + response.data);
+          
+          this.$toast.show("Exam inserted!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/exam-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Insert was not successful:" + error,
-            type: "danger",
-            title: "Insert exam",
-          });
-          this.$router.push("/exam-list");
+          console.log(error);
         });
     },
     updateExam() {
-      ExamService.editExam({
-        id: this.id,
-        subjectDto: {
-          id: this.subjectDto.id,
-          firstName: this.subjectDto.firstName,
-          lastName: this.subjectDto.lastName,
-        },
-        professorDto: {
-          id: this.professorDto.id,
-          firstName: this.professorDto.name
-        },
-        examDate: this.examDate,
-        examPeriodDto: {
-          id: this.examPeriodDto.id,
-          name: this.examPeriodDto.name,
-          examPeriodFrom: this.examPeriodDto.examPeriodFrom,
-          examPeriodTo: this.examPeriodDto.examPeriodTo
-        }
-      })
+      ExamService.editExam(this.exam)
         .then((response) => {
-          console.log("Exam updated" + response);
-          addMessage({
-            message: "Exam updated",
-            type: "success",
-            title: "EXAM",
-          });
+          console.log("Exam updated" + response.data);
+          
+          this.$toast.show("Exam updated!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/exam-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Update was not successful:" + error,
-            type: "danger",
-            title: "Update exam",
-          });
-          this.$router.push("/exam-list");
+          console.log(error);
         });
     },
     getAllProfessors() {
@@ -253,3 +185,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.label-left
+{
+  text-align: left;
+  padding-bottom: 10px;
+}
+
+img{
+  height: 200px;
+  width: 200px;
+  margin-top: 30px;
+}
+
+.cancel{
+  margin-left: 10px;
+}
+</style>
+

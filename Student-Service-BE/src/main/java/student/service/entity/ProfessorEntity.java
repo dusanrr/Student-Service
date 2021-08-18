@@ -1,7 +1,7 @@
 package student.service.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "professor")
@@ -23,15 +27,21 @@ public class ProfessorEntity implements Serializable {
 	private Long id;
 	
 	@Column(name="firstName", nullable = false, length=30)
+	@Size(min = 3, max = 30, message = "Minimal number of characters is 3...")
+	@NotEmpty(message = "First name is required...")
 	private String firstName;
 	
 	@Column(name="lastName", nullable = false, length=30)
+	@Size(min = 3, max = 30, message = "Minimal number of characters is 3...")
+	@NotEmpty(message = "Last name is required...")
 	private String lastName;
 	
 	@Column(name="email", nullable = true, length=30, unique = true)
+	@Email(message = "Email should be valid")
 	private String email;
 	
 	@Column(name="adress", nullable = true, length=50)
+	@Size(min = 3, max = 50, message = "Minimal number of characters is 3...")
 	private String adress;
 	
 	@ManyToOne
@@ -39,9 +49,11 @@ public class ProfessorEntity implements Serializable {
 	private CityEntity city;
 	
 	@Column(name="phone", nullable = true, length=15)
+	@Size(min = 6, max = 15, message = "Minimal number of characters is 3...")
 	private String phone;
 	
 	@Column(name="reelectionDate", nullable = false)
+	@NotNull(message = "Reelection date is required...")
 	private Date reelectionDate;
 	
 	@ManyToOne

@@ -4,20 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import student.service.dao.ExamPeriodDao;
-import student.service.dto.ExamPeriodDto;
 import student.service.entity.ExamPeriodEntity;
-import student.service.exception.EntityNotPresent;
-import student.service.exception.ExistEntityException;
-import student.service.mapper.ExamPeriodMapper;
 import student.service.service.ExamPeriodService;
 
 @Service
@@ -25,8 +22,6 @@ import student.service.service.ExamPeriodService;
 public class ExamPeriodServiceImpl implements ExamPeriodService {
 
 	private final ExamPeriodDao examPeriodDao;
-
-	private final ExamPeriodMapper examPeriodMapper = Mappers.getMapper(ExamPeriodMapper.class);
 
 	@Autowired
 	public ExamPeriodServiceImpl(ExamPeriodDao examPeriodDao) {
@@ -36,59 +31,64 @@ public class ExamPeriodServiceImpl implements ExamPeriodService {
 
 	
 	@Override
-	public List<ExamPeriodDto> findAll() {
-		List<ExamPeriodEntity> entites = (List)examPeriodDao.findAll();
+	public List<ExamPeriodEntity> findAll() {
+		List<ExamPeriodEntity> entites = (List<ExamPeriodEntity>)examPeriodDao.findAll();
 		return entites.stream().map(entity -> {
-			return examPeriodMapper.toExamPeriodDto(entity);
+			return (entity);
 		}).collect(Collectors.toList());
 	}
 	
 	@Override
-	public Page<ExamPeriodDto> findByPage(Pageable pageable) {
-		Page<ExamPeriodDto> entites = examPeriodDao.findAll(pageable).map(examPeriodMapper::toExamPeriodDto);
-		return entites;
+	public Page<ExamPeriodEntity> findByPage(Pageable pageable, String search) {
+		if (search == null)
+			return examPeriodDao.findAll(pageable);
+		else
+			return examPeriodDao.findByNameContaining(pageable, search);
 	}
 
 	@Override
-	public void deleteById(Long id) {
-		examPeriodDao.deleteById(id);
+	public void deleteById(Long id) throws EntityNotFoundException {
+		if(examPeriodDao.existsById(id))
+			examPeriodDao.deleteById(id);
+		else
+			throw new EntityNotFoundException("Exam period with that ID does not exists!");
 	}
 
 	@Override
-	public ExamPeriodDto save(ExamPeriodDto examDto) throws ExistEntityException {
-		Optional<ExamPeriodEntity> entity = examPeriodDao.findByName(examDto.getName());
+	public ExamPeriodEntity save(ExamPeriodEntity examPeriodEntity) throws EntityExistsException {
+		Optional<ExamPeriodEntity> entity = examPeriodDao.findByName(examPeriodEntity.getName());
 		if (entity.isPresent()) {
-			throw new ExistEntityException(entity.get(), "Exam period already exists!");
+			throw new EntityExistsException("Exam period already exists!");
 		}
-		ExamPeriodEntity e = examPeriodDao.save(examPeriodMapper.toExamPeriod(examDto));
-		return examPeriodMapper.toExamPeriodDto(e);
+		ExamPeriodEntity e = examPeriodDao.save(examPeriodEntity);
+		return e;
 	}
 	
 	@Override
-	public ExamPeriodDto update(ExamPeriodDto examDto) throws EntityNotPresent {
-		Optional<ExamPeriodEntity> entity = examPeriodDao.findByName(examDto.getName());
+	public ExamPeriodEntity update(ExamPeriodEntity examPeriodEntity) throws EntityNotFoundException {
+		Optional<ExamPeriodEntity> entity = examPeriodDao.findByName(examPeriodEntity.getName());
 		if (!entity.isPresent()) {
-			throw new EntityNotPresent(examDto.getName(), "Exam period does not exist!");
+			throw new EntityNotFoundException("Exam period does not exist!");
 		}
-		ExamPeriodEntity e = examPeriodDao.save(examPeriodMapper.toExamPeriod(examDto));
-		return examPeriodMapper.toExamPeriodDto(e);
+		ExamPeriodEntity e = examPeriodDao.save(examPeriodEntity);
+		return e;
 		
 	}
 	
 	@Override
-	public Optional<ExamPeriodDto> findById(Long id) {
+	public Optional<ExamPeriodEntity> findById(Long id) {
 		Optional<ExamPeriodEntity> exam = examPeriodDao.findById(id);
 		if (exam.isPresent()) {
-			return Optional.of(examPeriodMapper.toExamPeriodDto(exam.get()));
+			return Optional.of(exam.get());
 		}
 		return Optional.empty();
 	}
 	
 	@Override
-	public Optional<ExamPeriodDto> findByName(String name) {
+	public Optional<ExamPeriodEntity> findByName(String name) {
 		Optional<ExamPeriodEntity> exam = examPeriodDao.findByName(name);
 		if (exam.isPresent()) {
-			return Optional.of(examPeriodMapper.toExamPeriodDto(exam.get()));
+			return Optional.of(exam.get());
 		}
 		return Optional.empty();
 	}

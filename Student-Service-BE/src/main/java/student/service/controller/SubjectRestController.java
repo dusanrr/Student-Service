@@ -8,8 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import student.service.dto.SubjectDto;
-import student.service.exception.EntityNotPresent;
-import student.service.exception.ExistEntityException;
+import student.service.entity.SubjectEntity;
 import student.service.service.SubjectService;
 
 @CrossOrigin(origins = "*")
@@ -35,46 +32,39 @@ public class SubjectRestController {
 	private SubjectService subjectService;
 
 	@GetMapping()
-	public @ResponseBody ResponseEntity<List<SubjectDto>> getAll() {
-		return ResponseEntity.status(HttpStatus.OK).body(subjectService.findAll());
+	//@PreAuthorize("hasRole('ADMIN')")
+	public List<SubjectEntity> getAll() {
+		return subjectService.findAll();
 	}
 	
 	@GetMapping("/page")
-	public @ResponseBody ResponseEntity<Page<SubjectDto>> getByPage(Pageable pageable) {
-		return ResponseEntity.status(HttpStatus.OK).body(subjectService.findByPage(pageable));
+	//@PreAuthorize("hasRole('ADMIN')")
+	public Page<SubjectEntity> getByPage(Pageable pageable, @RequestParam(required = false) String search) {
+		return subjectService.findByPage(pageable, search);
 	}
 	
 	@GetMapping("/{id}")
-	public @ResponseBody ResponseEntity<Object> get(@PathVariable Long id) {
-		Optional<SubjectDto> subjectDto = subjectService.findById(id);
-		if (subjectDto.isPresent()) {
-			return ResponseEntity.status(HttpStatus.OK).body(subjectDto.get());
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid subject id!");
+	//@PreAuthorize("hasRole('ADMIN')")
+	public Optional<SubjectEntity> get(@PathVariable Long id) {
+		return subjectService.findById(id);
 	}
 
 	@PostMapping()
-	public @ResponseBody ResponseEntity<Object> save(@Valid @RequestBody SubjectDto subjectDto) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK).body(subjectService.save(subjectDto));
-		} catch (ExistEntityException ex) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-		}
+	@PreAuthorize("hasRole('ADMIN')")
+	public SubjectEntity save(@Valid @RequestBody SubjectEntity subjectEntity) {
+		return subjectService.save(subjectEntity);
 	}
 	
 	@PutMapping("/{id}")
-	public @ResponseBody ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody SubjectDto subjectDto) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK).body(subjectService.update(subjectDto));
-		} catch (EntityNotPresent ex) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-		}
+	@PreAuthorize("hasRole('ADMIN')")
+	public SubjectEntity update(@PathVariable Long id, @Valid @RequestBody SubjectEntity subjectEntity) {
+		return subjectService.update(subjectEntity);
 	}
 
 	@DeleteMapping("/{id}")
-	public @ResponseBody ResponseEntity<String> delete(@PathVariable Long id) {
+	@PreAuthorize("hasRole('ADMIN')")
+	public void delete(@PathVariable Long id) {
 		subjectService.deleteById(id);
-		return ResponseEntity.status(HttpStatus.OK).body("Deleted");
 	}
 
 }

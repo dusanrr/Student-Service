@@ -5,8 +5,8 @@
     getAllExamPeriods: () => {
       return apiClient.get('/api/examperiods')
     },
-    getExamPeriodsByPage: ({ page, size}) => {
-        return apiClient.get(`/api/examperiods/page?page=${page}&size=${size}`)
+    getAllByPage: ({ page, size, search }) => {
+        return apiClient.get(`/api/examperiods/page?page=${page}&size=${size}&search=${search}`)
     },
     getExamPeriod: (examPeriodId) => {
         return apiClient.get('/api/examperiods/'+ examPeriodId)

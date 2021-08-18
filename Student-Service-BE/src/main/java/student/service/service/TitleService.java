@@ -3,25 +3,25 @@ package student.service.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import student.service.dto.CityDto;
-import student.service.dto.TitleDto;
-import student.service.exception.EntityNotPresent;
-import student.service.exception.ExistEntityException;
+import student.service.entity.TitleEntity;
 
 public interface TitleService {
 
-	List<TitleDto> findAll();
+	List<TitleEntity> findAll();
 
-	void deleteById(Long id);
+	void deleteById(Long id) throws EntityNotFoundException;
 
-	TitleDto save(TitleDto titleDto) throws ExistEntityException;
+	TitleEntity save(TitleEntity titleEntity) throws EntityExistsException;
 	
-	TitleDto update(TitleDto titleDto) throws EntityNotPresent ;
+	TitleEntity update(TitleEntity titleEntity) throws EntityNotFoundException ;
 
-	Optional<TitleDto> findById(Long id);
+	Optional<TitleEntity> findById(Long id);
 
-	Page<TitleDto> findByPage(Pageable pageable);
+	Page<TitleEntity> findByPage(Pageable pageable);
 }

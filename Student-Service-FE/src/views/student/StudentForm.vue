@@ -1,89 +1,48 @@
 <template>
-  <div class="form-container m-4 col-6 col-md-8 col-sm-10">
-    <h3 v-if="actionType === 'new'">New Student</h3>
-    <h3 v-else>Edit Student</h3>
-    <MyInputComponent
-      name="indexNumber"
-      label="Index number"
-      v-model="indexNumber"
-      :vcomp="v$.indexNumber"
-    >
-    </MyInputComponent>
+  <div class="container">
+    <img alt="Student service" src="../../assets/student-crud.png">
+    <div class="row justify-content-center">
+      <div class="col-4" style="margin-top: 50px;">
+        <h3 v-if="actionType === 'new'">New Student</h3>
+        <h3 v-else>Edit Student</h3>
 
-    <MyInputComponent
-      name="indexYear"
-      label="Index year"
-      v-model="indexYear"
-      :vcomp="v$.indexYear"
-    >
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="indexNumber" label="Index number" v-model="student.indexNumber" :vcomp="v$.student.indexNumber"></MyInputComponent>
 
-    <MyInputComponent
-      name="firstName"
-      label="First name"
-      v-model="firstName"
-      :vcomp="v$.firstName"
-    >
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="indexYear" label="Index year" v-model="student.indexYear" :vcomp="v$.student.indexYear"></MyInputComponent>
 
-    <MyInputComponent
-      name="lastName"
-      label="Last name"
-      v-model="lastName"
-      :vcomp="v$.lastName"
-    >
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="firstName" label="First name" v-model="student.firstName" :vcomp="v$.student.firstName"></MyInputComponent>
 
-    <MyInputComponent
-      name="email"
-      label="Email"
-      v-model="email"
-      :vcomp="v$.email"
-    >
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="lastName" label="Last name" v-model="student.lastName" :vcomp="v$.student.lastName"></MyInputComponent>
 
-    <MyInputComponent
-      name="adress"
-      label="Adress"
-      v-model="adress"
-      :vcomp="v$.adress"
-    >
-    </MyInputComponent>
+        <MyInputComponent name="email" label="Email" v-model="student.email" :vcomp="v$.student.email"></MyInputComponent>
 
-    <div>
-      <select class="form-control" v-model="cityDto">
-        <option v-for="city in cityList" :value="city" :key="city.number">
-          {{ city.name }}
-        </option>
-      </select>
-    </div>
+        <MyInputComponent name="adress" label="Adress" v-model="student.adress" :vcomp="v$.student.adress"></MyInputComponent>
 
-    <MyInputComponent
-      name="currentYearOfStudy"
-      label="Current year of study"
-      v-model="currentYearOfStudy"
-      :vcomp="v$.currentYearOfStudy"
-    >
-    </MyInputComponent>
+        <div class="label-left">
+          <label class="form-label">City</label>
+          <select class="form-control" v-model="student.city">
+            <option v-for="city in cityList" :value="city" :key="city.number">
+              {{ city.name }}
+            </option>
+          </select>
+        </div>
 
-    <div class="d-flex flex-row-reverse">
-      <button class="btn btn-outline-primary" @click="saveStudent">Save</button>
+        <MyInputComponent requiredField="true" name="currentYearOfStudy" label="Current year of study" v-model="student.currentYearOfStudy" :vcomp="v$.student.currentYearOfStudy"></MyInputComponent>
+
+        <button class="btn btn-outline-primary" @click="saveStudent" :disabled='!isComplete'>Save</button>
+        <button class="btn btn-outline-danger cancel" @click="returnBack">Cancel</button>
+
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import useValidate from "@vuelidate/core";
-import {
-  required,
-  //maxValue,
-  minLength,
-  maxLength,
-  email,
-} from "@vuelidate/validators";
+import { required, minLength, maxLength, email } from "@vuelidate/validators";
 import MyInputComponent from "@/components/input/MyInputControl.vue";
 import StudentService from "@/services/StudentService.js";
-import { addMessage } from "@/main.js";
 
 export default {
   components: { MyInputComponent },
@@ -97,18 +56,10 @@ export default {
     },
   },
   created() {
+    this.vueLoader();
     if (this.studentId) {
       StudentService.getStudent(this.studentId).then((response) => {
-        const student = response.data;
-        this.indexNumber = student.indexNumber;
-        this.indexYear = student.indexYear;
-        this.firstName = student.firstName;
-        this.lastName = student.lastName;
-        this.email = student.email;
-        this.adress = student.adress;
-        this.cityDto.number = student.cityDto.number;
-        this.cityDto.name = student.cityDto.name;
-        this.currentYearOfStudy = student.currentYearOfStudy;
+        this.student = response.data;
       });
     }
     this.getAllCities();
@@ -117,60 +68,50 @@ export default {
     return {
       v$: useValidate(),
       cityList: [],
-      indexNumber: "",
-      indexYear: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      adress: "",
-      cityDto: {
-        number: null,
-        name: "",
-      },
-      currentYearOfStudy: null,
+      student: {},
     };
   },
   validations() {
     return {
-      indexNumber: {
-        required,
-        minLength: minLength(4),
-        maxLength: maxLength(4),
-      },
-      indexYear: {
-        required,
-        //minLength: minLength(4),
-        maxLength: maxLength(4),
-      },
-      firstName: {
-        required,
-        minLength: minLength(3),
-        maxLength: maxLength(30),
-      },
-      lastName: {
-        required,
-        minLength: minLength(3),
-        maxLength: maxLength(30),
-      },
-      email: {
-        required,
-        email
-      },
-      adress: {
-        minLength: minLength(3),
-        maxLength: maxLength(50),
-      },
-      cityDto: {
-        required
-      },
-      currentYearOfStudy: {
-        required,
-        //minLength: minLength(1),
-        maxLength: maxLength(7),
+      student:{
+        indexNumber: { required, minLength: minLength(4), maxLength: maxLength(4) },
+        indexYear: { required, maxLength: maxLength(4) },
+        firstName: { required, minLength: minLength(3), maxLength: maxLength(30) },
+        lastName: { required, minLength: minLength(3), maxLength: maxLength(30) },
+        email: { email },
+        adress: { minLength: minLength(3), maxLength: maxLength(50) },
+        city: { },
+        currentYearOfStudy: { required, maxLength: maxLength(7) }
       },
     };
   },
+  computed: {
+    isComplete () {
+      return this.student.indexNumber && this.student.indexYear && this.student.firstName && this.student.lastName && this.student.currentYearOfStudy;
+    }
+  },
   methods: {
+    returnBack() {
+      this.$router.go(-1);
+    },
+    vueLoader()
+      {
+        let loader = this.$loading.show({
+        // Optional parameters
+        container: this.$refs.loadingContainer,
+        color: '#0C937A',
+        loader: 'dots',
+        width: 64,
+        height: 64,
+        backgroundColor: '#EFEBEB',
+        opacity: 1.0,
+        zIndex: 999,
+        });
+        // simulate AJAX
+        setTimeout(() => {
+            loader.hide()
+        }, 3000)
+    },
     saveStudent() {
       if (this.actionType && this.actionType === "new") {
         this.insertStudent();
@@ -179,67 +120,33 @@ export default {
       }
     },
     insertStudent() {
-      StudentService.insertStudent({
-        indexNumber: this.indexNumber,
-        indexYear: this.indexYear,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        adress: this.adress,
-        cityDto: {
-          number: this.cityDto.number,
-          name: this.cityDto.name,
-        },
-        currentYearOfStudy: this.currentYearOfStudy,
-      })
+      StudentService.insertStudent(this.student)
         .then((response) => {
-          console.log("Student inserted" + response);
-          addMessage({
-            message: "Student inserted",
-            type: "success",
-            title: "STUDENT",
-          });
+          console.log("Student inserted" + response.data);
+
+          this.$toast.show("Student inserted!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/student-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Insert was not successful:" + error,
-            type: "danger",
-            title: "Insert student",
-          });
-          this.$router.push("/student-list");
+          console.log(error);
         });
     },
     updateStudent() {
-      StudentService.editStudent({
-        indexNumber: this.indexNumber,
-        indexYear: this.indexYear,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        adress: this.adress,
-        cityDto: {
-          number: this.cityDto.number,
-          name: this.cityDto.name,
-        },
-        currentYearOfStudy: this.currentYearOfStudy,
-      })
+      StudentService.editStudent(this.student)
         .then((response) => {
-          console.log("Student updated" + response);
-          addMessage({
-            message: "Student updated",
-            type: "success",
-            title: "STUDENT",
-          });
+          console.log("Student updated" + response.data);
+          
+          this.$toast.show("Student updated!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/student-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Update was not successful:" + error,
-            type: "danger",
-            title: "Update student",
-          });
-          this.$router.push("/student-list");
+          console.log(error);
         });
     },
     getAllCities() {
@@ -251,3 +158,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.label-left
+{
+  text-align: left;
+  padding-bottom: 10px;
+}
+
+img{
+  height: 200px;
+  width: 200px;
+  margin-top: 30px;
+}
+
+.cancel{
+  margin-left: 10px;
+}
+</style>
+

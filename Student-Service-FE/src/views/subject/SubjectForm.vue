@@ -1,83 +1,51 @@
 <template>
-  <div class="form-container m-4 col-6 col-md-8 col-sm-10">
-    <h3 v-if="actionType === 'new'">New Subject</h3>
-    <h3 v-else>Edit Subject</h3>
+  <div class="container">
+    <img alt="Student service" src="../../assets/student-crud.png">
+    <div class="row justify-content-center">
+      <div class="col-4" style="margin-top: 50px;">
+        <h3 v-if="actionType === 'new'">New Subject</h3>
+        <h3 v-else>Edit Subject</h3>
 
-    <MyInputComponent
-      readonly
-      name="id"
-      label="Subject Id"
-      v-model="id"
-      :vcomp="v$.id"
-      v-if="actionType !== 'new'"
-    >
-    </MyInputComponent>
+        <MyInputComponent name="id" label="Subject Id" v-model="subject.id" :vcomp="v$.subject.id" v-if="actionType !== 'new'" readonly></MyInputComponent>
 
-    <MyInputComponent 
-      name="name" 
-      label="Name" 
-      v-model="name" 
-      :vcomp="v$.name">
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="name" label="Name" v-model="subject.name" :vcomp="v$.subject.name"></MyInputComponent>
 
-    <MyInputComponent
-      name="description"
-      label="Description"
-      v-model="description"
-      :vcomp="v$.description"
-    >
-    </MyInputComponent>
+        <MyInputComponent name="description" label="Description" v-model="subject.description" :vcomp="v$.subject.description"></MyInputComponent>
 
-    <MyInputComponent
-      name="noOfESP"
-      label="No. of ESP"
-      v-model="noOfESP"
-      :vcomp="v$.noOfESP"
-    >
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="noOfESP" label="No. of ESP" v-model="subject.noOfESP" :vcomp="v$.subject.noOfESP"></MyInputComponent>
 
-    <MyInputComponent
-      name="yearOfStudy"
-      label="Year of study"
-      v-model="yearOfStudy"
-      :vcomp="v$.yearOfStudy"
-    >
-    </MyInputComponent>
+        <MyInputComponent name="yearOfStudy" label="Year of study" v-model="subject.yearOfStudy" :vcomp="v$.subject.yearOfStudy"></MyInputComponent>
 
-    <label class="form-label">Semester</label>
-    <div>
-      <select class="form-control" v-model="semester">
-        <option value="Summer">Summer</option>
-        <option value="Winter">Winter</option>
-      </select>
-    </div>
+        <div class="label-left">
+          <label class="form-label">Semester</label>
+          <select class="form-control" v-model="subject.semester">
+            <option value="Summer">Summer</option>
+            <option value="Winter">Winter</option>
+          </select>
+        </div>
 
-    <label class="form-label">Professor</label>
-    <div>
-      <select class="form-control" v-model="professorDto">
-        <option v-for="professor in professorList" :value="professor" :key="professor.id">
-          {{ professor.firstName }} {{ professor.lastName }}
-        </option>
-      </select>
-    </div>
+        <div class="label-left">
+          <label class="form-label required-field">Professor</label>
+           <select class="form-control" v-model="subject.professor">
+            <option v-for="professor in professorList" :value="professor" :key="professor.id">
+              {{ professor.firstName + ' ' + professor.lastName }}
+            </option>
+          </select>
+        </div>
 
-    <div class="d-flex flex-row-reverse">
-      <button class="btn btn-outline-primary" @click="saveSubject">Save</button>
+        <button class="btn btn-outline-primary" @click="saveSubject" :disabled='!isComplete'>Save</button>
+        <button class="btn btn-outline-danger cancel" @click="returnBack">Cancel</button>
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import useValidate from "@vuelidate/core";
-import {
-  required,
-  //maxValue,
-  minLength,
-  maxLength,
-} from "@vuelidate/validators";
+import { required, minLength, maxLength } from "@vuelidate/validators";
 import MyInputComponent from "@/components/input/MyInputControl.vue";
 import SubjectService from "@/services/SubjectService.js";
-import { addMessage } from "@/main.js";
 
 export default {
   components: { MyInputComponent },
@@ -91,18 +59,10 @@ export default {
     },
   },
   created() {
+    this.vueLoader();
     if (this.subjectId) {
       SubjectService.getSubject(this.subjectId).then((response) => {
-        const subject = response.data;
-        this.id = subject.id;
-        this.name = subject.name;
-        this.description = subject.description;
-        this.noOfESP = subject.noOfESP;
-        this.yearOfStudy = subject.yearOfStudy;
-        this.semester = subject.semester;
-        this.professorDto.id = subject.professorDto.id;
-        this.professorDto.firstName = subject.professorDto.firstName;
-        this.professorDto.lastName = subject.professorDto.lastName;
+        this.subject = response.data;
       });
     }
     this.getAllProfessors();
@@ -111,49 +71,54 @@ export default {
     return {
       v$: useValidate(),
       professorList: [],
-      id: null,
-      name: "",
-      description: "",
-      noOfESP: null,
-      yearOfStudy: null,
-      semester: "",
-      professorDto: {
-        id: null,
-        firstName: "",
-        lastName: ""
-      },
+      subject: {}
     };
   },
   validations() {
     return {
-      id: {
-        required,
-      },
-      name: {
-        required,
-        minLength: minLength(3),
-        maxLength: maxLength(30),
-      },
-      description: {
-        required,
-        minLength: minLength(1),
-        maxLength: maxLength(30),
-      },
-      noOfESP: {
-        minLength: minLength(1),
-        maxLength: maxLength(30),
-      },
-      yearOfStudy: {
-        //minLength: minLength(1),
-        maxLength: maxLength(1),
-      },
-      semester: {
-        //minLength: minLength(1),
-        maxLength: maxLength(10),
-      },
+      subject: {
+        id: { required },
+        name: { required, minLength: minLength(3), maxLength: maxLength(30) },
+        description: { minLength: minLength(1), maxLength: maxLength(30) },
+        noOfESP: { minLength: minLength(1), maxLength: maxLength(30) },
+        yearOfStudy: { maxLength: maxLength(1) },
+        semester: { maxLength: maxLength(10) },
+      }
     };
   },
+  updated(){
+    
+  },
+  computed: {
+    isComplete () {
+      if(this.actionType == 'new')
+        return this.subject.name && this.subject.noOfESP && this.subject.professor;
+      else
+      return this.subject.id && this.subject.name && this.subject.noOfESP && this.subject.professor;
+    }
+  },
   methods: {
+    returnBack() {
+      this.$router.go(-1);
+    },
+    vueLoader()
+      {
+        let loader = this.$loading.show({
+        // Optional parameters
+        container: this.$refs.loadingContainer,
+        color: '#0C937A',
+        loader: 'dots',
+        width: 64,
+        height: 64,
+        backgroundColor: '#EFEBEB',
+        opacity: 1.0,
+        zIndex: 999,
+        });
+        // simulate AJAX
+        setTimeout(() => {
+            loader.hide()
+        }, 3000)
+    },
     saveSubject() {
       if (this.actionType && this.actionType === "new") {
         this.insertSubject();
@@ -162,66 +127,33 @@ export default {
       }
     },
     insertSubject() {
-      SubjectService.insertSubject({
-        name: this.name,
-        description: this.description,
-        noOfESP: this.noOfESP,
-        yearOfStudy: this.yearOfStudy,
-        semester: this.semester,
-        professorDto: {
-          id: this.professorDto.id,
-          firstName: this.professorDto.firstName,
-          lastName: this.professorDto.lastName,
-        },
-      })
+      SubjectService.insertSubject(this.subject)
         .then((response) => {
-          console.log("Subject inserted" + response);
-          addMessage({
-            message: "Subject inserted",
-            type: "success",
-            title: "SUBJECT",
-          });
+          console.log("Subject inserted" + response.data);
+
+          this.$toast.show("Subject inserted!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/subject-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Insert was not successful:" + error,
-            type: "danger",
-            title: "Insert subject",
-          });
-          this.$router.push("/subject-list");
+          console.log(error);
         });
     },
     updateSubject() {
-      SubjectService.editSubject({
-        id: this.id,
-        name: this.name,
-        description: this.description,
-        noOfESP: this.noOfESP,
-        yearOfStudy: this.yearOfStudy,
-        semester: this.semester,
-        professorDto: {
-          id: this.professorDto.id,
-          firstName: this.professorDto.firstName,
-          lastName: this.professorDto.lastName,
-        },
-      })
+      SubjectService.editSubject(this.subject)
         .then((response) => {
-          console.log("Subject updated" + response);
-          addMessage({
-            message: "Subject updated",
-            type: "success",
-            title: "SUBJECT",
-          });
+          console.log("Subject updated" + response.data);
+
+          this.$toast.show("Subject updated!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/subject-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Update was not successful:" + error,
-            type: "danger",
-            title: "Update Subject",
-          });
-          this.$router.push("/subject-list");
+          console.log(error);
         });
     },
     getAllProfessors() {
@@ -233,3 +165,21 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.label-left
+{
+  text-align: left;
+  padding-bottom: 10px;
+}
+
+img{
+  height: 200px;
+  width: 200px;
+  margin-top: 30px;
+}
+
+.cancel{
+  margin-left: 10px;
+}
+</style>

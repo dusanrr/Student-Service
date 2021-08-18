@@ -2,11 +2,20 @@
   import { apiClient }  from '../main.js'
   
   export default {
+    getAllExams: () => {
+      return apiClient.get('/api/exams')
+    },
+    getStudentExam: (indexNumber) => {
+      return apiClient.get(`/api/exams/indexNumber?indexNumber=${indexNumber}`)
+    },
+    getAllStudents: () => {
+      return apiClient.get('/api/students')
+    },
     getAllExamRegistrations: () => {
       return apiClient.get('/api/examregistrations')
     },
-    getExamRegistrationsByPage: ({ page, size}) => {
-        return apiClient.get(`/api/examregistrations/page?page=${page}&size=${size}`)
+    getAllByPage: ({ page, size, search }) => {
+        return apiClient.get(`/api/examregistrations/page?page=${page}&size=${size}&search=${search}`)
     },
     getExamRegistration: (examRegistrationId) => {
         return apiClient.get('/api/examregistrations/'+ examRegistrationId)

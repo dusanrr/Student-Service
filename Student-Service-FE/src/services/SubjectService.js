@@ -7,8 +7,8 @@ export default {
   getAllProfessors: () => {
     return apiClient.get('/api/professors')
   },
-  getSubjectsByPage: ({ page, size}) => {
-      return apiClient.get(`/api/subjects/page?page=${page}&size=${size}`)
+  getAllByPage: ({ page, size, search }) => {
+      return apiClient.get(`/api/subjects/page?page=${page}&size=${size}&search=${search}`)
   },
   getSubject: (subjectId) => {
       return apiClient.get('/api/subjects/'+ subjectId)

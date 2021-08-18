@@ -2,28 +2,51 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import StudentList from '../views/student/StudentList.vue'
 import StudentForm from '../views/student/StudentForm.vue'
+import StudentDetails from '../views/student/StudentDetails.vue'
 import ProfessorList from '../views/professor/ProfessorList.vue'
 import ProfessorForm from '../views/professor/ProfessorForm.vue'
+import ProfessorDetails from '../views/professor/ProfessorDetails.vue'
 import SubjectList from '../views/subject/SubjectList.vue'
 import SubjectForm from '../views/subject/SubjectForm.vue'
+import SubjectDetails from '../views/subject/SubjectDetails.vue'
 import ExamList from '../views/exam/ExamList.vue'
 import ExamForm from '../views/exam/ExamForm.vue'
+import ExamDetails from '../views/exam/ExamDetails.vue'
 import ExamPeriodList from '../views/examperiod/ExamPeriodList.vue'
 import ExamPeriodForm from '../views/examperiod/ExamPeriodForm.vue'
+import ExamPeriodDetails from '../views/examperiod/ExamPeriodDetails.vue'
+import ExamRegistrationList from '../views/examregistration/ExamRegistrationList.vue'
+import ExamRegistrationForm from '../views/examregistration/ExamRegistrationForm.vue'
+import ExamRegistrationDetails from '../views/examregistration/ExamRegistrationDetails.vue'
+
+import Login from "../components/Login.vue";
+import Register from "../components/Register.vue";
+// lazy-loaded
+const Profile = () => import("../components/Profile.vue")
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "/",
+    component: Login,
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: "/login",
+    component: Login,
+  },
+  {
+    path: "/register",
+    component: Register,
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    // lazy-loaded
+    component: Profile,
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home
   },
   {
     path: '/student-list',
@@ -35,6 +58,12 @@ const routes = [
     props:true,
     name: 'EditStudent',
     component: StudentForm
+  },
+  {
+    path: '/student-details/:studentId',
+    props:true,
+    name: 'StudentDetails',
+    component: StudentDetails
   },
   {
     path: '/student-form',    
@@ -54,6 +83,12 @@ const routes = [
     component: ProfessorForm
   },
   {
+    path: '/professor-details/:professorId',
+    props:true,
+    name: 'ProfessorDetails',
+    component: ProfessorDetails
+  },
+  {
     path: '/professor-form',    
     name: 'NewProfessor',
     component: ProfessorForm,
@@ -69,6 +104,12 @@ const routes = [
     props:true,
     name: 'EditSubject',
     component: SubjectForm
+  },
+  {
+    path: '/subject-details/:subjectId',
+    props:true,
+    name: 'SubjectDetails',
+    component: SubjectDetails
   },
   {
     path: '/subject-form',    
@@ -88,6 +129,12 @@ const routes = [
     component: ExamForm
   },
   {
+    path: '/exam-details/:examId',
+    props:true,
+    name: 'ExamDetails',
+    component: ExamDetails
+  },
+  {
     path: '/exam-form',    
     name: 'NewExam',
     component: ExamForm,
@@ -105,11 +152,40 @@ const routes = [
     component: ExamPeriodForm
   },
   {
+    path: '/exam-period-details/:examPeriodId',
+    props:true,
+    name: 'ExamPeriodDetails',
+    component: ExamPeriodDetails
+  },
+  {
     path: '/exam-period-form',    
     name: 'NewExamPeriod',
     component: ExamPeriodForm,
     props: { actionType: 'new'}
-  }
+  },
+  {
+    path: '/exam-registration-list',
+    name: 'ExamRegistrationList',
+    component: ExamRegistrationList
+  },
+  {
+    path: '/exam-registration-form/:examRegistrationId',
+    props:true,
+    name: 'EditExamRegistration',
+    component: ExamRegistrationForm
+  },
+  {
+    path: '/exam-registration-details/:examRegistrationId',
+    props:true,
+    name: 'ExamRegistrationDetails',
+    component: ExamRegistrationDetails
+  },
+  {
+    path: '/exam-registration-form',    
+    name: 'NewExamRegistration',
+    component: ExamRegistrationForm,
+    props: { actionType: 'new'}
+  },
 ]
 
 const router = createRouter({

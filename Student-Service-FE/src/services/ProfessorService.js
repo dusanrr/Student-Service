@@ -10,8 +10,8 @@ export default {
   getAllTitles: () => {
     return apiClient.get('/api/titles')
   },
-  getProfessorsByPage: ({ page, size}) => {
-      return apiClient.get(`/api/professors/page?page=${page}&size=${size}`)
+  getAllByPage: ({ page, size, search }) => {
+      return apiClient.get(`/api/professors/page?page=${page}&size=${size}&search=${search}`)
   },
   getProfessor: (professorId) => {
       return apiClient.get('/api/professors/'+ professorId)

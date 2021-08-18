@@ -7,6 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "title")
@@ -15,8 +18,11 @@ public class TitleEntity implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@NotNull(message = "ID is required...")
 	private Long id;
 	
+	@Size(min = 3, max = 10, message = "Betweeen 3 and 10...")
+	@NotEmpty(message = "Title name is required...")
 	private String titleName;
 
 	public TitleEntity() {

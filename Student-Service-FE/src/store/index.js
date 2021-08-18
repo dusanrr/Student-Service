@@ -1,28 +1,34 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+import { auth } from "./AuthModule";
 
 export default createStore({
+  modules: {
+    auth,
+  },
   state: {
     studentList: null,
     professorList: null,
     subjectList: null,
     examList: null,
-    examPeriodList: null
+    examPeriodList: null,
+    examRegistrationList: null
   },
   getters:{
-    getStudentListState: (state) => {
-      return state.studentList;
-    },
-    getProfessorListState: (state) => {
-      return state.professorList;
-    },
-    getSubjectListState: (state) => {
-      return state.subjectList;
-    },
-    getExamListState: (state) => {
-      return state.examList;
-    },
-    getExamPeriodListState: (state) => {
-      return state.examPeriodList;
+    getListStateByType: (state) => (type) => {
+      switch (type) {
+        case "student":
+          return state.studentList;
+        case "professor":
+          return state.professorList;
+        case "subject":
+          return state.subjectList;
+        case "exam":
+          return state.examList;
+        case "examPeriod":
+          return state.examPeriodList;
+        case "examRegistration":
+          return state.examRegistrationList;
+      }
     },
   },
   mutations: {
@@ -31,26 +37,32 @@ export default createStore({
       state.professorList = {...pageState},
       state.subjectList = {...pageState},
       state.examList = {...pageState},
-      state.examPeriodList = {...pageState};
+      state.examPeriodList = {...pageState},
+      state.examRegistrationList = {...pageState};
     }
   },
   actions: {
-    saveStudentListPageState(context, pageInfo) {
-      context.commit('storePageInfo', pageInfo)
+    saveListState: (context, pageInfo) => {
+      switch (pageInfo.type) {
+        case "student":
+          context.commit('storePageInfo', pageInfo);
+          break;
+        case "professor":
+          context.commit('storePageInfo', pageInfo);
+          break;
+        case "subject":
+          context.commit('storePageInfo', pageInfo);
+          break;
+        case "exam":
+          context.commit('storePageInfo', pageInfo);
+          break;
+        case "examPeriod":
+          context.commit('storePageInfo', pageInfo);
+          break;
+        case "examRegistration":
+          context.commit('storePageInfo', pageInfo);
+          break;
+      }
     },
-    saveProfessorListPageState(context, pageInfo) {
-      context.commit('storePageInfo', pageInfo)
-    },
-    saveSubjectListPageState(context, pageInfo) {
-      context.commit('storePageInfo', pageInfo)
-    },
-    saveExamListPageState(context, pageInfo) {
-      context.commit('storePageInfo', pageInfo)
-    },
-    saveExamPeriodListPageState(context, pageInfo) {
-      context.commit('storePageInfo', pageInfo)
-    }
   },
-  modules: {
-  }
 })

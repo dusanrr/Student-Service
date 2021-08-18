@@ -10,6 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "subject")
@@ -22,12 +25,15 @@ public class SubjectEntity implements Serializable {
 	private Long id;
 	
 	@Column(name="name", nullable = false, length=30)
+	@Size(min = 3, max = 30, message = "Minimal number of characters is 3...")
+	@NotEmpty(message = "Name is required...")
 	private String name;
 	
 	@Column(name="description", nullable = true, length=200)
 	private String description;
 	
 	@Column(name="noOfESP", nullable = false, length=1)
+	@NotNull(message = "No. of ESP is required...")
 	private int noOfESP;
 	
 	@Column(name="yearOfStudy", nullable = true, length=1)

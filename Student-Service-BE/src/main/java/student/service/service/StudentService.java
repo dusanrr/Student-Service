@@ -3,24 +3,25 @@ package student.service.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import student.service.dto.StudentDto;
-import student.service.exception.EntityNotPresent;
-import student.service.exception.ExistEntityException;
+import student.service.entity.StudentEntity;
 
 public interface StudentService {
 
-	List<StudentDto> findAll();
+	List<StudentEntity> findAll();
 
-	void deleteByIndexNumber(String id);
+	void deleteByIndexNumber(String id) throws EntityNotFoundException;
 
-	StudentDto save(StudentDto studentDto) throws ExistEntityException;
+	StudentEntity save(StudentEntity studentEntity) throws EntityExistsException;
 	
-	StudentDto update(StudentDto studentDto) throws EntityNotPresent ;
+	StudentEntity update(StudentEntity studentEntity) throws EntityNotFoundException ;
 
-	Optional<StudentDto> findByIndexNumber(String id);
+	Optional<StudentEntity> findByIndexNumber(String id);
 
-	Page<StudentDto> findByPage(Pageable pageable);
+	Page<StudentEntity> findByPage(Pageable pageable, String search);
 }

@@ -1,49 +1,39 @@
 <template>
-  <div class="form-container m-4 col-6 col-md-8 col-sm-10">
-    <h3 v-if="actionType === 'new'">New Exam</h3>
-    <h3 v-else>Edit Exam</h3>
+  <div class="container">
+    <img alt="Student service" src="../../assets/student-crud.png">
+    <div class="row justify-content-center">
+      <div class="col-4" style="margin-top: 50px;">
+        <h3 v-if="actionType === 'new'">New Exam Period</h3>
+        <h3 v-else>Edit Exam Period</h3>
 
-    <MyInputComponent
-      readonly
-      name="id"
-      label="Exam Period Id"
-      v-model="id"
-      :vcomp="v$.id"
-      v-if="actionType !== 'new'"
-    >
-    </MyInputComponent>
+        <MyInputComponent name="id" label="Exam Period Id" v-model="examPeriod.id" :vcomp="v$.examPeriod.id" v-if="actionType !== 'new'" readonly></MyInputComponent>
 
-    <MyInputComponent
-      name="name"
-      label="Name"
-      v-model="name"
-      :vcomp="v$.name"
-    >
-    </MyInputComponent>
+        <MyInputComponent requiredField="true" name="name" label="Name" v-model="examPeriod.name" :vcomp="v$.examPeriod.name"></MyInputComponent>
 
-    <label class="form-label">Exam period from</label>
-    <input type="date" v-model="examPeriodFrom" class="form-control"/>
+        <div class="label-left">
+          <label class="form-label required-field">Exam period from</label>
+          <input type="date" v-model="examPeriod.examPeriodFrom" class="form-control"/>
+        </div>
 
-    <label class="form-label">Exam period to</label>
-    <input type="date" v-model="examPeriodTo" class="form-control"/>
+        <div class="label-left">
+          <label class="form-label required-field">Exam period to</label>
+          <input type="date" v-model="examPeriod.examPeriodTo" class="form-control"/>
+        </div>
 
-    <div class="d-flex flex-row-reverse">
-      <button class="btn btn-outline-primary" @click="saveExamPeriod">Save</button>
+        <button class="btn btn-outline-primary" @click="saveExamPeriod" :disabled='!isComplete'>Save</button>
+        <button class="btn btn-outline-danger cancel" @click="returnBack">Cancel</button>
+
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import useValidate from "@vuelidate/core";
-import {
-  required,
-  //maxValue,
-  //minLength,
-  //maxLength,
-} from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import MyInputComponent from "@/components/input/MyInputControl.vue";
 import ExamPeriodService from "@/services/ExamPeriodService.js";
-import { addMessage } from "@/main.js";
 
 export default {
   components: { MyInputComponent },
@@ -57,42 +47,59 @@ export default {
     },
   },
   created() {
+    this.vueLoader();
     if (this.examPeriodId) {
       ExamPeriodService.getExamPeriod(this.examPeriodId).then((response) => {
-        const examPeriod = response.data;
-        this.id = examPeriod.id;
-        this.name = examPeriod.name;
-        this.examPeriodFrom = examPeriod.examPeriodFrom;
-        this.examPeriodTo = examPeriod.examPeriodTo;
+        this.examPeriod = response.data;
       });
     }
   },
   data() {
     return {
       v$: useValidate(),
-      id: null,
-      name: "",
-      examPeriodFrom: null,
-      examPeriodTo: null
+      examPeriod: {}
     };
   },
   validations() {
     return {
-      id: {
-        required
-      },
-      name: {
-        required
-      },
-      examPeriodFrom: {
-        required
-      },
-      examPeriodTo: {
-        required
-      }   
+      examPeriod:{
+        id: { required },
+        name: { required },
+        examPeriodFrom: { required },
+        examPeriodTo: { required }   
+      }
     };
   },
+  computed: {
+    isComplete () {
+      if(this.actionType == 'new')
+        return this.examPeriod.name && this.examPeriod.examPeriodFrom && this.examPeriod.examPeriodTo;
+        else
+          return this.examPeriod.id && this.examPeriod.name && this.examPeriod.examPeriodFrom && this.examPeriod.examPeriodTo;
+    }
+  },
   methods: {
+    returnBack() {
+      this.$router.go(-1);
+    },
+    vueLoader()
+      {
+        let loader = this.$loading.show({
+        // Optional parameters
+        container: this.$refs.loadingContainer,
+        color: '#0C937A',
+        loader: 'dots',
+        width: 64,
+        height: 64,
+        backgroundColor: '#EFEBEB',
+        opacity: 1.0,
+        zIndex: 999,
+        });
+        // simulate AJAX
+        setTimeout(() => {
+            loader.hide()
+        }, 3000)
+    },
     saveExamPeriod() {
       if (this.actionType && this.actionType === "new") {
         this.insertExamPeriod();
@@ -101,54 +108,55 @@ export default {
       }
     },
     insertExamPeriod() {
-      ExamPeriodService.insertExamPeriod({
-        name: this.name,
-        examPeriodFrom: this.examPeriodFrom,
-        examPeriodTo: this.examPeriodTo
-      })
+      ExamPeriodService.insertExamPeriod(this.examPeriod)
         .then((response) => {
-          console.log("Exam period inserted" + response);
-          addMessage({
-            message: "Exam period inserted",
-            type: "success",
-            title: "EXAM PERIOD",
-          });
+          console.log("Exam period inserted" + response.data);
+         
+          this.$toast.show("Exam period inserted!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/exam-period-list");
         })
         .catch((error) => {
-          addMessage({
-            message: "Insert was not successful:" + error,
-            type: "danger",
-            title: "Insert exam period",
-          });
-          this.$router.push("/exam-period-list");
+          console.log(error);
         });
     },
     updateExamPeriod() {
-      ExamPeriodService.editExamPeriod({
-        id: this.id,
-        name: this.name,
-        examPeriodFrom: this.examPeriodFrom,
-        examPeriodTo: this.examPeriodTo
-      })
+      ExamPeriodService.editExamPeriod(this.examPeriod)
         .then((response) => {
-          console.log("Exam period updated" + response);
-          addMessage({
-            message: "Exam period updated",
-            type: "success",
-            title: "EXAM PERIOD",
-          });
+          console.log("Exam period updated" + response.data);
+          
+          this.$toast.show("Exam period updated!", {
+                    type: "success",
+                    duration: 6000
+                  });
           this.$router.push("/exam-period-list");
         })
-        .catch((error) => {
-          addMessage({
-            message: "Update was not successful:" + error,
-            type: "danger",
-            title: "Update exam period",
-          });
-          this.$router.push("/exam-period-list");
+        .catch((error) => {         
+          console.log(error);
         });
     },
   },
 };
 </script>
+
+<style scoped>
+.label-left
+{
+  text-align: left;
+  padding-bottom: 10px;
+}
+
+img{
+  height: 200px;
+  width: 200px;
+  margin-top: 30px;
+}
+
+.cancel{
+  margin-left: 10px;
+}
+</style>
+
+

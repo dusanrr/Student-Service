@@ -8,8 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import student.service.dto.ExamDto;
-import student.service.exception.EntityNotPresent;
-import student.service.exception.ExistEntityException;
+import student.service.entity.ExamEntity;
 import student.service.service.ExamService;
 
 @CrossOrigin(origins = "*")
@@ -35,46 +31,45 @@ public class ExamRestController {
 	private ExamService examService;
 
 	@GetMapping()
-	public @ResponseBody ResponseEntity<List<ExamDto>> getAll() {
-		return ResponseEntity.status(HttpStatus.OK).body(examService.findAll());
+	//@PreAuthorize("hasRole('ADMIN')")
+	public List<ExamEntity> getAll() {
+		return examService.findAll();
 	}
 	
 	@GetMapping("/page")
-	public @ResponseBody ResponseEntity<Page<ExamDto>> getByPage(Pageable pageable) {
-		return ResponseEntity.status(HttpStatus.OK).body(examService.findByPage(pageable));
+	//@PreAuthorize("hasRole('ADMIN')")
+	public Page<ExamEntity> getByPage(Pageable pageable, String search) {
+		return examService.findByPage(pageable, search);
 	}
 	
 	@GetMapping("/{id}")
-	public @ResponseBody ResponseEntity<Object> get(@PathVariable Long id) {
-		Optional<ExamDto> examPeriodDto = examService.findById(id);
-		if (examPeriodDto.isPresent()) {
-			return ResponseEntity.status(HttpStatus.OK).body(examPeriodDto.get());
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid exam id!");
+	//@PreAuthorize("hasRole('ADMIN')")
+	public Optional<ExamEntity> get(@PathVariable Long id) {
+		return examService.findById(id);
+	}
+	
+	@GetMapping("/indexNumber")
+	@PreAuthorize("hasRole('ADMIN')")
+	public Optional<List<?>> getStudentExam(String indexNumber) {
+		return examService.findAllPosibleStudentExams(indexNumber);
 	}
 
 	@PostMapping()
-	public @ResponseBody ResponseEntity<Object> save(@Valid @RequestBody ExamDto professorDto) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK).body(examService.save(professorDto));
-		} catch (ExistEntityException ex) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-		}
+	//@PreAuthorize("hasRole('ADMIN')")
+	public ExamEntity save(@Valid @RequestBody ExamEntity examEntity) {
+		return examService.save(examEntity);
 	}
 	
 	@PutMapping("/{id}")
-	public @ResponseBody ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody ExamDto professorDto) {
-		try {
-			return ResponseEntity.status(HttpStatus.OK).body(examService.update(professorDto));
-		} catch (EntityNotPresent ex) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-		}
+	//@PreAuthorize("hasRole('ADMIN')")
+	public ExamEntity update(@PathVariable Long id, @Valid @RequestBody ExamEntity examEntity) {
+		return examService.update(examEntity);
 	}
 
 	@DeleteMapping("/{id}")
-	public @ResponseBody ResponseEntity<String> delete(@PathVariable Long id) {
+	//@PreAuthorize("hasRole('ADMIN')")
+	public void delete(@PathVariable Long id) {
 		examService.deleteById(id);
-		return ResponseEntity.status(HttpStatus.OK).body("Deleted");
 	}
 
 }

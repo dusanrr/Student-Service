@@ -2,15 +2,18 @@ package student.service.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "student", uniqueConstraints = { @UniqueConstraint(columnNames = {"indexNumber", "indexYear"})})
@@ -19,22 +22,34 @@ public class StudentEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	@Column(name="indexNumber", nullable = false, length=4)
+	@Size(min = 4, max = 4, message = "Exact number of characters is 4...")
+	@NotEmpty(message = "Index number is required...")
 	private String indexNumber;
 	
 	@Column(name="indexYear", nullable = false, length=4)
+	@NotEmpty(message = "Index year is required...")
 	private String indexYear;
 	
 	@Column(name="firstName", nullable = false, length=30)
+	@Size(min = 3, max = 30, message = "Minimal number of characters is 3...")
+	@NotEmpty(message = "First name is required...")
 	private String firstName;
 	
 	@Column(name="lastName", nullable = false, length=30)
+	@Size(min = 3, max = 30, message = "Minimal number of characters is 3...")
+	@NotEmpty(message = "Last name is required...")
 	private String lastName;
 	
 	@Column(name="email", nullable = true, length=30, unique = true)
+	@Email(message = "Email should be valid")
 	private String email;
 	
 	@Column(name="adress", nullable = true, length=50)
+	@Size(min = 3, max = 50, message = "Minimal number of characters is 3...")
 	private String adress;
 	
 	@ManyToOne
@@ -49,9 +64,10 @@ public class StudentEntity implements Serializable {
 		
 	}
 	
-	public StudentEntity(String indexNumber, String indexYear, String firstName, String lastName, String email,
+	public StudentEntity(Long id, String indexNumber, String indexYear, String firstName, String lastName, String email,
 			String adress, int postalCode, int currentYearOfStudy, CityEntity city) {
 		super();
+		this.id = id;
 		this.indexNumber = indexNumber;
 		this.indexYear = indexYear;
 		this.firstName = firstName;
@@ -60,6 +76,14 @@ public class StudentEntity implements Serializable {
 		this.adress = adress;
 		this.city = city;
 		this.currentYearOfStudy = currentYearOfStudy;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getIndexNumber() {
@@ -113,8 +137,8 @@ public class StudentEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "StudentEntity [indexNumber=" + indexNumber + ", indexYear=" + indexYear + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", email=" + email + ", adress=" + adress + ", city=" + city
+		return "StudentEntity [id=" + id + ", indexNumber=" + indexNumber + ", indexYear=" + indexYear + ", firstName="
+				+ firstName + ", lastName=" + lastName + ", email=" + email + ", adress=" + adress + ", city=" + city
 				+ ", currentYearOfStudy=" + currentYearOfStudy + "]";
 	}
 
@@ -127,6 +151,7 @@ public class StudentEntity implements Serializable {
 		result = prime * result + currentYearOfStudy;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((indexNumber == null) ? 0 : indexNumber.hashCode());
 		result = prime * result + ((indexYear == null) ? 0 : indexYear.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
@@ -164,6 +189,11 @@ public class StudentEntity implements Serializable {
 				return false;
 		} else if (!firstName.equals(other.firstName))
 			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
 		if (indexNumber == null) {
 			if (other.indexNumber != null)
 				return false;
@@ -180,6 +210,5 @@ public class StudentEntity implements Serializable {
 		} else if (!lastName.equals(other.lastName))
 			return false;
 		return true;
-	}	
-	
+	}
 }

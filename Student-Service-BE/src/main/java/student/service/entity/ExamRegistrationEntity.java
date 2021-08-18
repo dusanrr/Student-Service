@@ -1,7 +1,7 @@
 package student.service.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,9 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
 @Entity
@@ -38,7 +35,7 @@ public class ExamRegistrationEntity implements Serializable {
 	public ExamRegistrationEntity() {
 		
 	}
-
+	
 	public ExamRegistrationEntity(Long id, StudentEntity student, ExamEntity exam, Date examRegistrationTime) {
 		super();
 		this.id = id;
